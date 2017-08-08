@@ -18,6 +18,14 @@ Check it out:
 * Responsive and mobile friendly layout
 * Lightweight (only 160KB)
 
+### Future Features
+* Render with React and JSX
+* Offline mode
+* Welcome email
+
+### Known Issues
+* When embedded in an iframe page must first start at 101% height and then be shrunken to allow scrolling.
+
 ## Installation
 
 * Visit Google Drive
@@ -43,8 +51,6 @@ I stumbled upon Google Apps Scripts and realized their APIs could do just wanted
 * [Bootstrap 3](https://getbootstrap.com/)
 * [Moment.js](https://momentjs.com/)
 * [Pikaday](https://github.com/dbushell/Pikaday) (for browsers without date support)
-
-* React and JSX (coming soon)
 
 ## How can I support developers?
 - Star our GitHub repo :star:
