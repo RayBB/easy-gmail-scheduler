@@ -3,12 +3,12 @@
 Responsive Gmail scheduler built with [Bootstrap 3](https://getbootstrap.com/).
 Developed and designed by [Raybb](https://github.com/RayBB).
 
-[screenshot example](https://todo.png)
+![screenshot example](https://github.com/RayBB/easy-gmail-scheduler/raw/master/screenshots/both.png)
 
 ## Demo
 Check it out:
-* [live](http://todo) (dummy data, no authorization)
-* [live](http://todo) (your data, requires authorization)
+* [live](https://raybb.github.io/easy-gmail-scheduler/src/frontend/) (dummy data, no authorization)
+* [live](https://script.google.com/macros/s/AKfycbxk4wQhd-mclrc1v0NeE1g4RL5ab9k6Gsa9MM2L58hcux3xT04/exec) (your data, requires authorization)
 
 ## Features
 * Schedule unlimited emails
@@ -51,4 +51,4 @@ I stumbled upon Google Apps Scripts and realized their APIs could do just wanted
 - Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
 
 ## License
-[MIT](https://github.com/epicmaxco/vuestic-admin/blob/master/LICENSE) license.
+[MIT](https://github.com/RayBB/easy-gmail-scheduler/blob/master/LICENSE) license.
