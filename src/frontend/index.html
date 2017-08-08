@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html id="myHTML" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Gmail Scheduler</title>
+
+    <!-- Latest compiled and minified CSS-->
+    <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+          integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" rel="stylesheet">
+
+    <link href="styles.css" rel="stylesheet">
+ 
+    <!-- Moment, for date parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js"
+     integrity="sha256-QTFbCMKzMsKmdagXusjKHMZIwzEJtpnGYJ/v/ArHklQ=" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="vertical-center">
+    <div class="container">
+        <div class="loader" id="loader"></div>
+        <div class="header clearfix">
+            <h3 class="text-center">Easy Gmail Scheduler</h3>
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="input-group form-group">
+                    <span class="input-group-addon" id="basic-addon0">Subject</span>
+                    <select aria-labelledby="basic-addon0" type="date" class="form-control" id="subjects"> </select>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="dateTimeRow">
+            <div class="col-sm-6  form-group">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">Date</span>
+                    <input aria-labelledby="basic-addon1" type="date" class="form-control" id="date">
+                </div>
+                <p class="help-block hidden">Error: Please select a date in the future</p>
+            </div>
+            <div class="col-sm-6 form-group">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon2">Time</span>
+                    <input aria-labelledby="basic-addon2" type="time" class="form-control" id="time">
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+                <input id="scheduleButton" class="btn btn-primary pull-right" onclick="addScheduledMessage()" type="button" value="Submit">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="text-center"> <h4>Scheduled Emails</h4></div>
+
+                <table class="table table-bordered table-striped table-responsive" id="mainTable">
+                    <tbody>
+                    <tr class="table-head">
+                        <td>Subject</td>
+                        <td id="date-col">Date</td>
+                        <td id="del-col">Delete</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="text-center">
+                    <span><span id="userEmail"></span> is logged in</span><br>
+                    <a href="https://accounts.google.com/logout" rel="noopener" target="_blank">Logout</a>
+                </div>
+            </div>
+        </div>
+        <footer class="footer text-center">
+            <hr>
+            <p><a href="https://github.com/RayBB/easy-gmail-scheduler">Made with love</a> | Code licensed <a href="Code licensed MIT">MIT</a>
+            </p>
+        </footer>
+        <template id="productrow">
+            <tr class="table-item">
+                <td></td>
+                <td></td>
+                <td class="del btn-danger">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </td>
+            </tr>
+        </template>
+    </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
