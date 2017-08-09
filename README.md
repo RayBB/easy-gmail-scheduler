@@ -1,6 +1,8 @@
 # Easy Gmail Scheduler
 
-Responsive Gmail scheduler built with [Bootstrap 3](https://getbootstrap.com/).
+Responsive Gmail scheduler built with [Bootstrap 3](https://getbootstrap.com/) and running on [Google Apps Scripts](https://www.google.com/script/start/).
+
+
 Developed and designed by [Raybb](https://github.com/RayBB).
 
 ![screenshot example](https://github.com/RayBB/easy-gmail-scheduler/raw/master/screenshots/both.png)
