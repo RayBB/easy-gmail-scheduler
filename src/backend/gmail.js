@@ -230,6 +230,7 @@ function dispatchDraft(id) {
             }
 
             var options = {
+                from        : message.getFrom(),
                 cc          : message.getCc(),
                 bcc         : message.getBcc(),
                 htmlBody    : body,
