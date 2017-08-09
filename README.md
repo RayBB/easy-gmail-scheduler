@@ -44,9 +44,9 @@ Check it out:
 ## Inspiration
 For years I've wanted to be able to send emails later for various reasons. Sometimes to get at the top of their inbox when they'll be in the office. Sometimes to just make sure an email is sent in the morning but gives me times to think on it but not worry about sending it.
 
-The main solutions I found at the time, in 2016, were Right Inbox and Boomerang. Both had free tiers to send a few emails but required giving a third party access to your email.
+The main solutions I found at the time, in 2016, were Right Inbox and Boomerang. Both had free tiers to send a few emails but required giving a third-party access to your email.
 
-I stumbled upon Google Apps Scripts and realized their APIs could do just wanted I needed. It didn't take long until I bumped into the gmail scheduler by [labnol.org](https://www.labnol.org/internet/schedule-gmail-send-later/24867/). I now knew it was possible but really didn't like the idea of having to open up a spreadsheet to schedule the emails. I knew it was possible to make a simpler version of their script with a nice web interface so that's what I did. Big thanks to labnol.org for their original work. I did end up using their function for sending drafts since it was already well made.
+I stumbled upon Google Apps Scripts and realized their APIs could do just what I needed. It didn't take long until I bumped into the Gmail scheduler by [labnol.org](https://www.labnol.org/internet/schedule-gmail-send-later/24867/). I now knew it was possible but really didn't like the idea of having to open a spreadsheet to schedule the emails. I knew it was possible to make a simpler version of their script with a nice web interface so that's what I did. Big thanks to labnol.org for their original work. I did end up using their function for sending drafts since it was already well made.
 
 
 ## Dependencies
