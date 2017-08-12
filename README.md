@@ -48,10 +48,6 @@ The main solutions I found at the time, in 2016, were Right Inbox and Boomerang.
 
 I stumbled upon Google Apps Scripts and realized their APIs could do just what I needed. It didn't take long until I bumped into the Gmail scheduler by [labnol.org](https://www.labnol.org/internet/schedule-gmail-send-later/24867/). I now knew it was possible but really didn't like the idea of having to open a spreadsheet to schedule the emails. I knew it was possible to make a simpler version of their script with a nice web interface so that's what I did. Big thanks to labnol.org for their original work. I did end up using their function for sending drafts since it was already well made.
 
-### Visitors
-I'm happy this helps some people out. I've added a little hit counter here to see how many people are visiting.
-
-![This is a hit counter, if you're seeing it it's probably because it's blocked by an ad blocker](http://s05.flagcounter.com/count/1sBW/bg_FFFFFF/txt_000000/border_FFFFFF/columns_4/maxflags_8/viewers_0/labels_0/pageviews_0/flags_0/percent_0/)
 
 ## Dependencies
 * [Bootstrap 3](https://getbootstrap.com/)
