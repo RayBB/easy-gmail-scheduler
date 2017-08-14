@@ -28,6 +28,9 @@ Check it out:
 ### Known Issues
 * When embedded in an iframe page must first start at 101% height and then be shrunken to allow scrolling.
 
+### Limitations
+* Google Apps Scripts are limited to sending 100 emails per day for Gmail users and 1,500 for G Suite users. [Source](https://developers.google.com/apps-script/guides/services/quotas)
+
 ## Installation
 
 * Visit Google Drive
