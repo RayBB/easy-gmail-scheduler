@@ -1,7 +1,8 @@
 'use strict';
-const debugging = (window == top);
+const demoMode = (window == top);
 let scheduledEmails;
 window.onload = function () {
+    if (demoMode) setupDemoMode();
     displaySchedule();
     displayDrafts();
     displayEmailAddress();
@@ -27,11 +28,7 @@ window.onload = function () {
 };
 
 function getEmailAddress(callback) {
-    if (debugging) {
-        callback("email@email.com");
-    } else {
-        google.script.run.withSuccessHandler(callback).getCurrentUser();
-    }
+    google.script.run.withSuccessHandler(callback).getCurrentUser();
 }
 function displayEmailAddress() {
     getEmailAddress(function (address) {
@@ -39,13 +36,7 @@ function displayEmailAddress() {
     })
 }
 function getDrafts(callback) {
-    if (debugging) {
-        let draftSubjects = ["Subject 1", "Subject 2", "etc", "Medium Article Examples", "Resume Inspiration",
-            "iPod Print", "https://iwantwhatitsworth.com/", "Lo And Behold: Reveries Of The Connected World"];
-        callback(draftSubjects);
-    } else {
-        google.script.run.withSuccessHandler(callback).getDraftSubjects();
-    }
+    google.script.run.withSuccessHandler(callback).getDraftSubjects();
 }
 function displayDrafts() {
     getDrafts(function (drafts) {
@@ -59,18 +50,7 @@ function displayDrafts() {
 }
 function getSchedule(callback) {
     showLoading(true);
-    if (debugging) {
-        if (typeof (scheduledEmails) == "undefined") {
-            scheduledEmails = [
-                { "subject": "Resume Inspiration", "date": "2018-08-01T20:11:00.000Z" },
-                { "subject": "iPod Print", "date": "2018-07-31T21:14:00.000Z" },
-                { "subject": "SQL Stuffs", "date": "2018-08-01T20:11:00.000Z" }
-            ];
-        }
-        callback(scheduledEmails)
-    } else {
-        google.script.run.withSuccessHandler(callback).getScheduledEmails();
-    }
+    google.script.run.withSuccessHandler(callback).getScheduledEmails();
 }
 function displaySchedule() {
     getSchedule(
@@ -103,15 +83,7 @@ function addScheduledMessage() {
 
     if (dateIsInFuture(sendDate)) {
         showError(false);
-        if (debugging) {
-            sendDate = sendDate.toJSON();
-            console.log("Submitting the following to Google: " + subject + sendDate);
-            const newEmail = { "subject": subject, "date": sendDate };
-            const index = scheduledEmails.findIndex(e => { return e.subject == subject });
-            index > -1 ? scheduledEmails[index] = newEmail : scheduledEmails.push(newEmail);
-        } else {
-            google.script.run.addEmailToSchedule(subject, JSON.stringify(sendDate));
-        }
+        google.script.run.addEmailToSchedule(subject, JSON.stringify(sendDate));
         displaySchedule();
     } else {
         showError(true);
@@ -119,11 +91,7 @@ function addScheduledMessage() {
 }
 function removeScheduledMessage(subject) {
     document.querySelectorAll('td').forEach(e => { if (e.innerText == subject) { e.parentNode.remove() } });
-    if (debugging) {
-        console.log("Removing: " + subject);
-    } else {
-        google.script.run.removeEmailFromSchedule(subject);
-    }
+    google.script.run.removeEmailFromSchedule(subject);
 }
 function loadPicker() {
     // Only loads if browser doesn't support input type="date"
@@ -177,6 +145,41 @@ function showError(boolean) {
 }
 
 
+function setupDemoMode() {
+    console.log("Running in demo mode. No data is sent");
+    scheduledEmails = [
+        { "subject": "Resume Inspiration", "date": "2018-08-01T20:11:00.000Z" },
+        { "subject": "iPod Print", "date": "2018-07-31T21:14:00.000Z" },
+        { "subject": "Happy Birthday!", "date": "2018-08-01T20:11:00.000Z" }
+    ];
 
-
-
+    class demoFuncs {
+        getCurrentUser() {
+            this._callBack("email@email.comm");
+        }
+        getDraftSubjects() {
+            const draftSubjects = ["Happy Birthday!", "Follow up on meeting", "Medium Article Examples", "Resume Inspiration",
+                "iPod Print", "Lo And Behold: Reveries Of The Connected World"];
+            this._callBack(draftSubjects);
+        }
+        getScheduledEmails() {
+            this._callBack(scheduledEmails);
+        }
+        addEmailToSchedule(subject, sendDate) {
+            sendDate = JSON.parse(sendDate);
+            console.log("Submitting the following to Google: " + subject + " " + sendDate);
+            const newEmail = { "subject": subject, "date": sendDate };
+            const index = scheduledEmails.findIndex(e => { return e.subject == subject });
+            index > -1 ? scheduledEmails[index] = newEmail : scheduledEmails.push(newEmail);
+        }
+        removeEmailFromSchedule(subject) {
+            console.log("Removing: " + subject);
+        }
+        withSuccessHandler(callback) {
+            let obj = new demoFuncs();
+            obj._callBack = callback;
+            return obj;
+        }
+    }
+    google.script.run = new demoFuncs();
+}
