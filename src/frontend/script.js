@@ -128,20 +128,11 @@ function parseTime(string) {
     return hours + ":" + minutes;
 }
 function showLoading(boolean) {
-    if (boolean) {
-        document.querySelector('#loader').classList.add('loader');
-    } else {
-        document.querySelector('#loader').classList.remove('loader');
-    }
+    document.querySelector('#loader').classList.toggle('loader', boolean);
 }
 function showError(boolean) {
-    if (boolean) {
-        document.querySelector('#dateTimeRow').classList.add("has-error");
-        document.querySelector('.help-block').classList.remove("hidden");
-    } else {
-        document.querySelector('#dateTimeRow').classList.remove("has-error");
-        document.querySelector('.help-block').classList.add("hidden");
-    }
+    document.querySelector('#dateTimeRow').classList.toggle("has-error", boolean);
+    document.querySelector('.help-block').classList.toggle("hidden", !boolean);
 }
 
 
