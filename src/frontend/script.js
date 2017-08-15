@@ -102,15 +102,15 @@ function addScheduledMessage() {
     let sendDate = new Date(date + " " + time);
 
     if (dateIsInFuture(sendDate)) {
-        sendDate = sendDate.toJSON();
         showError(false);
         if (debugging) {
+            sendDate = sendDate.toJSON();
             console.log("Submitting the following to Google: " + subject + sendDate);
             const newEmail = { "subject": subject, "date": sendDate };
             const index = scheduledEmails.findIndex(e => { return e.subject == subject });
             index > -1 ? scheduledEmails[index] = newEmail : scheduledEmails.push(newEmail);
         } else {
-            google.script.run.addEmailToSchedule(subject, sendDate);
+            google.script.run.addEmailToSchedule(subject, JSON.parse(sendDate));
         }
         displaySchedule();
     } else {
