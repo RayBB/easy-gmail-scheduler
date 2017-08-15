@@ -58,11 +58,13 @@ function displayDrafts() {
 function getSchedule(callback) {
     showLoading(true);
     if (debugging) {
-        let scheduledEmails = [
-            { "subject": "Resume Inspiration", "date": "2018-08-01T20:11:00.000Z" },
-            { "subject": "iPod Print", "date": "2018-07-31T21:14:00.000Z" },
-            { "subject": "SQL Stuffs", "date": "2018-08-01T20:11:00.000Z" }
-        ];
+        if (typeof(scheduledEmails) == "undefined"){
+            scheduledEmails = [
+                { "subject": "Resume Inspiration", "date": "2018-08-01T20:11:00.000Z" },
+                { "subject": "iPod Print", "date": "2018-07-31T21:14:00.000Z" },
+                { "subject": "SQL Stuffs", "date": "2018-08-01T20:11:00.000Z" }
+            ];
+        }
         callback(scheduledEmails)
     } else {
         google.script.run.withSuccessHandler(callback).getScheduledEmails();
@@ -75,7 +77,7 @@ function displaySchedule() {
             var newContents = document.createDocumentFragment();
 
             for (let message of s) {
-                var formattedDate = moment(message.date).format('MMMM Do YYYY, hh:mm a');
+                var formattedDate = moment(new Date(message.date)).format('MMM Do YYYY, hh:mm a');
                 var clone = document.importNode(template.content, true);
                 var td = clone.querySelectorAll("td");
                 td[0].textContent = message.subject;
@@ -93,16 +95,19 @@ function displaySchedule() {
     )
 }
 function addScheduledMessage() {
-    var date = document.querySelector('#date').value;
-    var time = parseTime(document.querySelector('#time').value);
-    var subject = document.querySelector('#subjects').value;
-    var sendDate = new Date(date + " " + time);
+    let date = document.querySelector('#date').value;
+    let time = parseTime(document.querySelector('#time').value);
+    let subject = document.querySelector('#subjects').value;
+    let sendDate = new Date(date + " " + time);
 
     if (dateIsInFuture(sendDate)){
-        sendDate = JSON.stringify(sendDate);
+        sendDate = sendDate.toJSON();
         showError(false);
         if (debugging){
-            console.log("Submitting the following to Google: " + subject + sendDate)
+            console.log("Submitting the following to Google: " + subject + sendDate);
+            let newEmail = { "subject": subject, "date": sendDate };
+            let index = scheduledEmails.findIndex(e => {return e.subject == subject});
+            index > -1 ? scheduledEmails[index] = newEmail : scheduledEmails.push(newEmail);
         } else{
             google.script.run.addEmailToSchedule(subject, sendDate);
         }
