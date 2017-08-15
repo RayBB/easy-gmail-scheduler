@@ -146,7 +146,7 @@ function setupDemoMode() {
 
     class demoFuncs {
         getCurrentUser() {
-            this._callBack("email@email.comm");
+            this._callBack("email@email.com");
         }
         getDraftSubjects() {
             const draftSubjects = ["Happy Birthday!", "Follow up on meeting", "Medium Article Examples", "Resume Inspiration",
