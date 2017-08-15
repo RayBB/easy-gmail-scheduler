@@ -110,7 +110,7 @@ function addScheduledMessage() {
             const index = scheduledEmails.findIndex(e => { return e.subject == subject });
             index > -1 ? scheduledEmails[index] = newEmail : scheduledEmails.push(newEmail);
         } else {
-            google.script.run.addEmailToSchedule(subject, JSON.parse(sendDate));
+            google.script.run.addEmailToSchedule(subject, JSON.stringify(sendDate));
         }
         displaySchedule();
     } else {
