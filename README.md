@@ -22,6 +22,7 @@ Check it out:
 
 ### Future Features
 * Render with React and JSX
+    * Visual warning if scheduled email isn't found in drafts
 * Offline mode
 * Welcome email
 
