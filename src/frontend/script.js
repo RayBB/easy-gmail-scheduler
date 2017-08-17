@@ -1,6 +1,7 @@
 'use strict';
 const demoMode = (window == top);
 let scheduledEmails;
+
 window.onload = function () {
     if (demoMode) setupDemoMode();
     displaySchedule();
@@ -172,5 +173,5 @@ function setupDemoMode() {
             return obj;
         }
     }
-    google.script.run = new demoFuncs();
+    window.google = { script: { run: new demoFuncs() } }
 }
