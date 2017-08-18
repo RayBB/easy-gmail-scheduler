@@ -13,6 +13,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/moment.min.js"
     integrity="sha256-Mwee5t+bD35zhwF9nGFf7szo0kMlILdBFdSK5xPQaTI=" crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.js"
+    integrity="sha256-1uk/AXiYWDJQQgWL10P3Vz5qhIsyBxnwo4dwmw4cYHc=" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js"
+    integrity="sha256-UEqn5+tyzezD6A5HBMNTlc5mXkmt+ohTfCBPtXMaGb0=" crossorigin="anonymous"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+
 </head>
 <body>
 <div class="vertical-center">
@@ -22,35 +30,37 @@
             <h3 class="text-center">Easy Gmail Scheduler</h3>
             <hr>
         </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="input-group form-group">
-                    <span class="input-group-addon" id="basic-addon0">Subject</span>
-                    <select aria-labelledby="basic-addon0" type="date" class="form-control" id="subjects"> </select>
+        <forma onsubmit="alert('pp')">        
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="input-group form-group">
+                        <span class="input-group-addon" id="basic-addon0">Subject</span>
+                        <select aria-labelledby="basic-addon0" type="date" class="form-control" id="subjects"> </select>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row" id="dateTimeRow">
-            <div class="col-sm-6  form-group">
-                <div class="input-group">
-                    <span class="input-group-addon" id="basic-addon1">Date</span>
-                    <input aria-labelledby="basic-addon1" type="date" class="form-control" id="date">
+            <div class="row" id="dateTimeRow">
+                <div class="col-sm-6  form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">Date</span>
+                        <input aria-labelledby="basic-addon1" type="date" class="form-control" id="date">
+                    </div>
+                    <p class="help-block hidden">Error: Please select a date in the future</p>
                 </div>
-                <p class="help-block hidden">Error: Please select a date in the future</p>
-            </div>
-            <div class="col-sm-6 form-group">
-                <div class="input-group">
-                    <span class="input-group-addon" id="basic-addon2">Time</span>
-                    <input aria-labelledby="basic-addon2" type="time" class="form-control" id="time">
+                <div class="col-sm-6 form-group">
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon2">Time</span>
+                        <input aria-labelledby="basic-addon2" type="time" class="form-control" id="time">
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-lg-12">
-                <input id="scheduleButton" class="btn btn-primary pull-right" onclick="addScheduledMessage()" type="button" value="Submit">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input id="scheduleButton" class="btn btn-primary pull-right" onclick="addScheduledMessage()" type="submit" value="Submit">
+                </div>
             </div>
-        </div>
+        </form>
         <div class="row">
             <div class="col-sm-12">
                 <div class="text-center"> <h4>Scheduled Emails</h4></div>
@@ -70,6 +80,7 @@
                 </div>
             </div>
         </div>
+        <div id="root"></div>
         <footer class="footer text-center">
             <hr>
             <p><a href="https://github.com/RayBB/easy-gmail-scheduler">Made with love</a> | Code licensed <a href="https://github.com/RayBB/easy-gmail-scheduler/blob/master/LICENSE">MIT</a>
@@ -89,3 +100,46 @@
 <script src="https://raybb.github.io/easy-gmail-scheduler/src/frontend/script.js"></script>
 </body>
 </html>
+
+<script type="text/babel">
+    const TR = (props) => {
+        return <tr>
+            <td>{props.subject}</td>
+            <td>{moment(new Date(props.date)).format('MMM Do YYYY, hh:mm a')}</td>
+            <td onClick={props.click} className="del btn-danger"><span className="glyphicon glyphicon-trash"></span></td>
+        </tr>
+        
+    }
+class Schedule extends React.Component {
+    state = {
+        cards : [
+        { "subject": "Resume Inspiration", "date": "2018-08-01T20:11:00.000Z" },
+        { "subject": "iPod Print", "date": "2018-07-31T21:14:00.000Z" },
+        { "subject": "Happy Birthday!", "date": "2018-08-01T20:11:00.000Z" }
+    ]   
+    };
+  removeDraft (subject) {
+      console.log(subject);
+      this.setState(prevState => ({
+          cards: prevState.cards.filter(e => e.subject !== subject)
+      }))
+  };
+  render() {
+    return <table className="table table-bordered table-striped table-responsive" id="mainTable">
+        <tbody>
+            <tr className="table-head">
+                <td>Subject</td>
+                <td id="date-col">Date</td>
+                <td onClick={(a) => this.removeDraft("Resume Inspiration")} id="del-col">Delete</td>
+            </tr>
+            {this.state.cards.map((card,index) => <TR key={index} subject={card.subject} click={() => this.removeDraft(card.subject)} date={card.date} />)}
+        </tbody>
+    </table>;
+  }
+}
+ReactDOM.render(
+<Schedule />,   
+//React.createElement(TD, {classes: "del btn-danger", toWhat: 'World'}, null),
+  document.getElementById('root')
+);
+    </script>
