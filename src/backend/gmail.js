@@ -181,72 +181,135 @@ function addEmailToSchedule(subject, date) {
     }
 }
 
-// ** Credit to Gmail Scheduler - https://github.com/webdigi/GmailScheduler/** //
-function dispatchDraft(id) {
+// All the follows replaces the original dispatchDraft and uses the GMail API in order
+// to send drafts within the their thread. See
+// https://stackoverflow.com/questions/27206595/how-to-send-a-draft-email-using-google-apps-script
 
-    try {
+/**
+*/
+function dispatchDraft(msgId){
+  // Get draft message.
+  var draftMsg = getDraftMsg(msgId,"json");
+  if (!getDraftMsg(msgId)) throw new Error( "Unable to get draft with msgId '"+msgId+"'" );
 
-        var message = GmailApp.getMessageById(id);
+  // see https://developers.google.com/gmail/api/v1/reference/users/drafts/send
+  var url = 'https://www.googleapis.com/gmail/v1/users/me/drafts/send'
+  var headers = {
+    Authorization: 'Bearer ' + ScriptApp.getOAuthToken()
+  };
+  var params = {
+    method: "post",
+    contentType: "application/json",
+    headers: headers,
+    muteHttpExceptions: true,
+    payload: JSON.stringify(draftMsg)
+  };
+  var check = UrlFetchApp.getRequest(url, params)
+  var response = UrlFetchApp.fetch(url, params);
 
-        if (message) {
+  var result = response.getResponseCode();
+  if (result == '200') {  // OK
+    return "Delivered";
+    //return JSON.parse(response.getContentText());
+  }
+  else {
+    // This is only needed when muteHttpExceptions == true
+    var err = JSON.parse(response.getContentText());
+    throw new Error( 'Error (' + result + ") " + err.error.message );
+  }
+}
 
-            var body = message.getBody();
-            var raw  = message.getRawContent();
+/**
+ * https://stackoverflow.com/questions/27206595/how-to-send-a-draft-email-using-google-apps-script
+ * Gets the draft message content that corresponds to a given Gmail Message ID.
+ * Throws if unsuccessful.
+ * See https://developers.google.com/gmail/api/v1/reference/users/drafts/get.
+ *
+ * @param {String}     messageId   Immutable Gmail Message ID to search for
+ * @param {String}     optFormat   Optional format; "object" (default) or "json"
+ *
+ * @returns {Object or String}     If successful, returns a Users.drafts resource.
+ */
+function getDraftMsg( messageId, optFormat ) {
+  var draftId = getDraftId( messageId );
 
-            /* Credit - YetAnotherMailMerge */
+  var url = 'https://www.googleapis.com/gmail/v1/users/me/drafts'+"/"+draftId;
+  var headers = {
+    Authorization: 'Bearer ' + ScriptApp.getOAuthToken()
+  };
+  var params = {
+    headers: headers,
+    muteHttpExceptions: true
+  };
+  var check = UrlFetchApp.getRequest(url, params)
+  var response = UrlFetchApp.fetch(url, params);
 
-            var regMessageId = new RegExp(id, "g");
-            if (body.match(regMessageId) != null) {
-                var inlineImages = {};
-                var nbrOfImg = body.match(regMessageId).length;
-                var imgVars = body.match(/<img[^>]+>/g);
-                var imgToReplace = [];
-                if(imgVars != null){
-                    for (var i = 0; i < imgVars.length; i++) {
-                        if (imgVars[i].search(regMessageId) != -1) {
-                            var id = imgVars[i].match(/realattid=([^&]+)&/);
-                            if (id != null) {
-                                id = id[1];
-                                var temp = raw.split(id)[1];
-                                temp = temp.substr(temp.lastIndexOf('Content-Type'));
-                                var imgTitle = temp.match(/name="([^"]+)"/);
-                                var contentType = temp.match(/Content-Type: ([^;]+);/);
-                                contentType = (contentType != null) ? contentType[1] : "image/jpeg";
-                                var b64c1 = raw.lastIndexOf(id) + id.length + 3; // first character in image base64
-                                var b64cn = raw.substr(b64c1).indexOf("--") - 3; // last character in image base64
-                                var imgb64 = raw.substring(b64c1, b64c1 + b64cn + 1); // is this fragile or safe enough?
-                                var imgblob = Utilities.newBlob(Utilities.base64Decode(imgb64), contentType, id); // decode and blob
-                                if (imgTitle != null) imgToReplace.push([imgTitle[1], imgVars[i], id, imgblob]);
-                            }
-                        }
-                    }
-                }
-
-                for (var i = 0; i < imgToReplace.length; i++) {
-                    inlineImages[imgToReplace[i][2]] = imgToReplace[i][3];
-                    var newImg = imgToReplace[i][1].replace(/src="[^\"]+\"/, "src=\"cid:" + imgToReplace[i][2] + "\"");
-                    body = body.replace(imgToReplace[i][1], newImg);
-                }
-            }
-
-            var options = {
-                from        : message.getFrom(),
-                cc          : message.getCc(),
-                bcc         : message.getBcc(),
-                htmlBody    : body,
-                replyTo     : message.getReplyTo(),
-                inlineImages: inlineImages,
-                name        : message.getFrom().match(/[^<]*/)[0].trim(),
-                attachments : message.getAttachments()
-            }
-
-            GmailApp.sendEmail(message.getTo(), message.getSubject(), body, options);
-            message.moveToTrash();
-            return "Delivered";
-        } else {
-            return "Message not found in Drafts";
-        }
-    } catch (e) {
-        return e.toString();
+  var result = response.getResponseCode();
+  if (result == '200') {  // OK
+    if (optFormat && optFormat == "JSON") {
+      return response.getContentText();
     }
+    else {
+      return JSON.parse(response.getContentText());
+    }
+  }
+  else {
+    // This is only needed when muteHttpExceptions == true
+    var error = JSON.parse(response.getContentText());
+    throw new Error( 'Error (' + result + ") " + error.message );
+  }
+}
+
+/**
+ * Gets the draft message ID that corresponds to a given Gmail Message ID.
+ *
+ * @param {String}     messageId   Immutable Gmail Message ID to search for
+ *
+ * @returns {String}               Immutable Gmail Draft ID, or null if not found
+ */
+function getDraftId( messageId ) {
+  if (messageId) {
+    var drafts = getDrafts();
+
+    for (var i=0; i<drafts.length; i++) {
+      if (drafts[i].message.id === messageId) {
+        return drafts[i].id;
+      }
+    }
+  }
+
+  // Didn't find the requested message
+  return null;
+}
+
+/**
+ * Gets the current user's draft messages.
+ * Throws if unsuccessful.
+ * See https://developers.google.com/gmail/api/v1/reference/users/drafts/list.
+ *
+ * @returns {Object[]}             If successful, returns an array of 
+ *                                 Users.drafts resources.
+ */
+function getDrafts() {
+  var url = 'https://www.googleapis.com/gmail/v1/users/me/drafts';
+  var headers = {
+    Authorization: 'Bearer ' + ScriptApp.getOAuthToken()
+  };
+  var params = {
+    headers: headers,
+    muteHttpExceptions: true
+  };
+  var check = UrlFetchApp.getRequest(url, params)
+  var response = UrlFetchApp.fetch(url, params);
+
+  var result = response.getResponseCode();
+  if (result == '200') {  // OK
+    return JSON.parse(response.getContentText()).drafts;
+  }
+  else {
+    // This is only needed when muteHttpExceptions == true
+    var error = JSON.parse(response.getContentText());
+    //throw new Error( 'Error (' + result + ") " + error.message );
+    return "Message Not Sent: " + error;
+  }
 }
