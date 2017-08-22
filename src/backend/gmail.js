@@ -69,14 +69,18 @@ function sendEmailBySubject(subject) {
 
     for (var i in drafts) {
         if (drafts[i].getSubject() == subject) {
-            var result = dispatchDraft(drafts[i].getId());
-            removeEmailFromSchedule(subject)
-            updateTriggers();
+            try{            
+              var result = dispatchDraft(drafts[i].getId());
+              removeEmailFromSchedule(subject)
+              updateTriggers();
 
-            if (result === "Delivered"){
+              if (result === "Delivered"){
                 return true;
-            } else {
+              } else {
                 sendErrorEmail(subject, "Error: " + result)
+              }
+            }catch(err){
+                sendErrorEmail(subject, "Error: Unable to locate/send the draft:<br /> " + err);
             }
         } else if(i == drafts.length-1){ // If we reach the last draft and the message wasn't found
             sendErrorEmail(subject, "Error: No email was found with the subject: " + subject);
@@ -245,6 +249,7 @@ function getDraftMsg( messageId, optFormat ) {
   var response = UrlFetchApp.fetch(url, params);
 
   var result = response.getResponseCode();
+  Logger.log("Unique Draft Request Response Code: " + result);  
   if (result == '200') {  // OK
     if (optFormat && optFormat == "JSON") {
       return response.getContentText();
@@ -270,6 +275,10 @@ function getDraftMsg( messageId, optFormat ) {
 function getDraftId( messageId ) {
   if (messageId) {
     var drafts = getDrafts();
+
+    if ( !Array.isArray(drafts)){
+      throw new Error( "Unable to retrieve drafts: " + drafts);
+    } 
 
     for (var i=0; i<drafts.length; i++) {
       if (drafts[i].message.id === messageId) {
@@ -303,8 +312,12 @@ function getDrafts() {
   var response = UrlFetchApp.fetch(url, params);
 
   var result = response.getResponseCode();
+  Logger.log("Draft Request Response Code: " + result);
   if (result == '200') {  // OK
     return JSON.parse(response.getContentText()).drafts;
+  }
+  else if(result == '403') {
+    return "Check that GMail API has been enabled in Resources->Advanced Google Services->Gmail to On. Also enable Gmail API in Google Cloud Console.";
   }
   else {
     // This is only needed when muteHttpExceptions == true
