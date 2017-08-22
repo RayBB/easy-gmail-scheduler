@@ -25,6 +25,7 @@ Check it out:
     * Visual warning if scheduled email isn't found in drafts
 * Offline mode
 * Welcome email
+* Add favicon
 
 ### Known Issues
 * When embedded in an iframe page must first start at 101% height and then be shrunken to allow scrolling.

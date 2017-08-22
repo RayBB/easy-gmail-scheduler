@@ -1,33 +1,7 @@
-
-/*
-TODO:
-Add welcome email
-Add favicon
-
-
-*/
-
 var userProperties = PropertiesService.getUserProperties(); // This is to allow retrieval of stored info
 
-function doGet() {
-    return HtmlService.createHtmlOutputFromFile('Index')
-        // This setting may expose to to cross site scripting but will allow your app to work anywhere
-        //.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-        ///.setFaviconUrl(iconUrl) 
-        .setTitle("Easy Gmail Scheduler")
-        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-}
-
-function getDraftSubjects() { //Returns array of draft subjects and ids
-    var subjects = [];
-    var drafts = GmailApp.getDraftMessages();
-    for (var i in drafts) {
-        subjects.push(drafts[i].getSubject());
-    }
-    return subjects;
-}
-
 function sendScheduledEmails(){
+    // Sends all emails that are scheduled to be sent 15 minutes from now or sooner
     var scheduledEmails = JSON.parse(userProperties.getProperty('scheduledData'));
     var nowPlus15 = Date.parse(new Date()) + (15*60*1000); /// 15 minutes extra may not be nessicary
     // Email use a 15 minute buffer because Google's Scheduling is not percise
@@ -39,70 +13,31 @@ function sendScheduledEmails(){
             sendEmailBySubject(email.subject);
         }
     }
-}
+    function sendEmailBySubject(subject) {
+        var drafts = GmailApp.getDraftMessages();
+    
+        for (var i in drafts) {
+            if (drafts[i].getSubject() == subject) {
+              try{
+                  var result = dispatchDraft(drafts[i].getId());
+                  removeEmailFromSchedule(subject)
+                  updateTriggers();
 
-
-function removeEmailFromSchedule(subject){
-    var scheduledEmails = JSON.parse(userProperties.getProperty('scheduledData'));
-    for (var i in scheduledEmails) {
-        if (scheduledEmails[i].subject == subject) {
-            scheduledEmails.splice(i,1);
-        }
-    }
-    setScheduledEmails(scheduledEmails);
-}
-
-function getCurrentUser(){
-    return Session.getActiveUser().getEmail();
-}
-
-function sendErrorEmail(originalSubject, body){
-    var header = "Sorry the email with the following subject could not be sent: <b>" + originalSubject + "</b><br>";
-    var footer = "<br><br><br>Sent by easy gmail scheduler"
-    var html =  header + body + footer;
-    GmailApp.sendEmail(Session.getActiveUser().getEmail(), "Gmail Scheduler Error", 'bodySpace', {htmlBody: html} );
-}
-
-
-function sendEmailBySubject(subject) {
-    var drafts = GmailApp.getDraftMessages();
-
-    for (var i in drafts) {
-        if (drafts[i].getSubject() == subject) {
-            try{            
-              var result = dispatchDraft(drafts[i].getId());
-              removeEmailFromSchedule(subject)
-              updateTriggers();
-
-              if (result === "Delivered"){
-                return true;
-              } else {
-                sendErrorEmail(subject, "Error: " + result)
-              }
-            }catch(err){
+                  if (result === "Delivered"){
+                      return true;
+                  } else {
+                      sendErrorEmail(subject, "Error: " + result)
+                  }
+                }catch(err){
                 sendErrorEmail(subject, "Error: Unable to locate/send the draft:<br /> " + err);
+            } else if(i == drafts.length-1){ // If we reach the last draft and the message wasn't found
+                sendErrorEmail(subject, "Error: No email was found with the subject: " + subject);
+                removeEmailFromSchedule(subject);
             }
-        } else if(i == drafts.length-1){ // If we reach the last draft and the message wasn't found
-            sendErrorEmail(subject, "Error: No email was found with the subject: " + subject);
-            removeEmailFromSchedule(subject);
         }
+        return false;
     }
-    return false;
 }
-
-
-function setScheduledEmails(scheduleInfo) { // expects non-stringified JSON
-    var data = JSON.stringify(scheduleInfo);
-    userProperties.setProperty('scheduledData', data);
-}
-
-function deleteProperties(){
-    Logger.log("Before " + userProperties.getProperty('scheduledData'));
-    userProperties.deleteAllProperties();
-    Logger.log("After " + userProperties.getProperty('scheduledData'));
-    getScheduledEmails();
-}
-
 function getScheduledEmails() {
     //Returns parsed email schedule
     var data = userProperties.getProperty('scheduledData');
@@ -116,26 +51,20 @@ function getScheduledEmails() {
     }
     return data;
 }
-
-function removeOldTriggers() {
-    // Because there is no way to get a trigger's time
-    // This deletes all triggers once there are no emails left in schedule
-    var triggers = ScriptApp.getProjectTriggers();
-
-    for (var i in triggers) {
-        ScriptApp.deleteTrigger(triggers[i]);
+function setScheduledEmails(scheduleInfo) { 
+    // expects non-stringified JSON
+    var data = JSON.stringify(scheduleInfo);
+    userProperties.setProperty('scheduledData', data);
+}
+function removeEmailFromSchedule(subject){
+    var scheduledEmails = JSON.parse(userProperties.getProperty('scheduledData'));
+    for (var i in scheduledEmails) {
+        if (scheduledEmails[i].subject == subject) {
+            scheduledEmails.splice(i,1);
+        }
     }
-
+    setScheduledEmails(scheduledEmails);
 }
-
-function sortEmailsByDate(emails){
-    var sorted = emails.sort(function(a,b){
-        return new Date(b.date) - new Date(a.date);
-    });
-    var sorted = sorted.reverse();
-    return sorted;
-}
-
 function updateTriggers() {
     removeOldTriggers(); // Deletes all old triggers
     var emails = getScheduledEmails();
@@ -143,7 +72,7 @@ function updateTriggers() {
     var triggerLimit = 5;
     /* 20 the limit set by google https://developers.google.com/apps-script/guides/services/quotas
     Using 5 instead to speed up the call
-     */
+    */
 
     for (var i = 0; i < sortedEmails.length && i < triggerLimit; i++){
         var date = new Date(sortedEmails[i].date);
@@ -152,10 +81,61 @@ function updateTriggers() {
             .at(date)
             .create();
     }
+
+    function removeOldTriggers() {
+        // There is no way to get a trigger's time or identify it, so this deletes all triggers once
+        var triggers = ScriptApp.getProjectTriggers();
+        for (var i in triggers) {
+            ScriptApp.deleteTrigger(triggers[i]);
+        }
+    }
+    function sortEmailsByDate(emails){
+        var sorted = emails.sort(function(a,b){
+            return new Date(b.date) - new Date(a.date);
+        });
+        var sorted = sorted.reverse();
+        return sorted;
+    }
+}
+function sendErrorEmail(originalSubject, body){
+    var header = "Sorry the email with the following subject could not be sent: <b>" + originalSubject + "</b><br>";
+    var footer = "<br><br><br>Sent by easy gmail scheduler"
+    var html =  header + body + footer;
+    GmailApp.sendEmail(getCurrentUser(), "Gmail Scheduler Error", 'bodySpace', {htmlBody: html} );
+}
+function deleteProperties(){
+    // This is only used for testing purposes
+    Logger.log("Before " + userProperties.getProperty('scheduledData'));
+    userProperties.deleteAllProperties();
+    Logger.log("After " + userProperties.getProperty('scheduledData'));
+    getScheduledEmails();
 }
 
-
+// Below are functions used by web interface
+function doGet() {
+    // Serves html page for web interface
+    return HtmlService.createHtmlOutputFromFile('Index')
+        // This setting may expose to to cross site scripting but will allow your app to work anywhere
+        //.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
+        ///.setFaviconUrl(iconUrl) 
+        .setTitle("Easy Gmail Scheduler")
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1');
+}
+function getCurrentUser(){
+    // Necessicary for frontend
+    return Session.getActiveUser().getEmail();
+}
+function getDraftSubjects() { 
+    // Returns array of draft subjects and ids - used by web interface
+    var subjects = [];
+    var drafts = GmailApp.getDraftMessages();
+    for (var i in drafts) {
+        subjects.push(drafts[i].getSubject());
+    }
+    return subjects;
+}
 function addEmailToSchedule(subject, date) {
+    // This is used by the web interface
     // NOTE ABOUT FUNCTION: Data should be converted to date here but can't be due to issue with Google Scripts
     // https://code.google.com/p/google-apps-script-issues/issues/detail?id=4426
     var newEmail = {
@@ -184,13 +164,14 @@ function addEmailToSchedule(subject, date) {
         return -1;
     }
 }
+// End functions used by web interface
+
+
 
 // All the follows replaces the original dispatchDraft and uses the GMail API in order
 // to send drafts within the their thread. See
 // https://stackoverflow.com/questions/27206595/how-to-send-a-draft-email-using-google-apps-script
 
-/**
-*/
 function dispatchDraft(msgId){
   // Get draft message.
   var draftMsg = getDraftMsg(msgId,"json");
