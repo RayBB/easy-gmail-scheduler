@@ -35,12 +35,14 @@ Check it out:
 
 ## Installation
 
-* Visit Google Drive
-* Click New > More > Google Apps Script
+1. Visit Google Drive
+2. Click New > More > Google Apps Script
     * Copy backend/gmail.js to the main code.gs file
-* Click File > New > Html file
+3. Click File > New > Html file
     * Name it index.html and copy frontend/index.html into it
-* Click Publish > Deploy as web app
+4. Authenticate Script
+    * Instructions [here](https://github.com/RayBB/easy-gmail-scheduler#authentication). Only the owner is required to do this.
+5. Click Publish > Deploy as web app
     * Execute the app as: "User accessing the web app"
     * Who has acces to the app: "Anyone"
     * Click Deploy
