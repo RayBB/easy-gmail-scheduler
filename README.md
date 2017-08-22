@@ -52,9 +52,23 @@ The main solutions I found at the time, in 2016, were Right Inbox and Boomerang.
 
 I stumbled upon Google Apps Scripts and realized their APIs could do just what I needed. It didn't take long until I bumped into the Gmail scheduler by [labnol.org](https://www.labnol.org/internet/schedule-gmail-send-later/24867/). I now knew it was possible but really didn't like the idea of having to open a spreadsheet to schedule the emails. I knew it was possible to make a simpler version of their script with a nice web interface so that's what I did. Big thanks to labnol.org for their original work. I did end up using their function for sending drafts since it was already well made.
 
-## Update 8/20/17 for Threads
+## Authentication
 
-Added the ability to send drafts that are responses within threads, using the GMail API: https://stackoverflow.com/questions/27206595/how-to-send-a-draft-email-using-google-apps-script 
+In order to send drafts that are part of threads, we utilize the GMail API. To use this, you must enable that API both in the Scripts project and in the Google Cloud Console.
+
+First, enable the Gmail API in the scripts project:
+ 
+![Auth menu in Scripts](screenshots/auth-1.png)
+<br /><br />
+![Gmail API to On](screenshots/auth-2.png)
+
+Next, Enable the Gmail API in the Google Cloud Console. Click the link at the bottom of the window in the Advanced Google Services. In the search box, type GMail and click on the Gmail API below it.
+
+![Gmail API on Google Cloud Console](screenshots/auth-3.png)
+
+Click enable to turn on the Gmail Services.
+
+![Enable Gmail API on Google Cloud Console](screenshots/auth-4.png)
 
 ## Dependencies
 * [Bootstrap 3](https://getbootstrap.com/)
