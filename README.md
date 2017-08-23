@@ -21,20 +21,21 @@ Check it out:
 * Lightweight (only 160KB)
 
 ### Future Features
-* Render with React and JSX
-    * Visual warning if scheduled email isn't found in drafts
-* Offline mode
+* Get drafts using Gmail API (faster)
 * Welcome email
 * Add favicon
+* Offline mode
+* Render with React and JSX
+    * Visual warning if scheduled email isn't found in drafts
 
 ### Known Issues
 * When embedded in an iframe page must first start at 101% height and then be shrunken to allow scrolling.
 
 ### Limitations
-* Google Apps Scripts are limited to sending 100 emails per day for Gmail users and 1,500 for G Suite users. [Source](https://developers.google.com/apps-script/guides/services/quotas)
+* Regular Gmail accounts are limited to 500 emails per day. [More info](https://support.google.com/mail/answer/22839?hl=en)
+* Please see [Usage Limits](https://developers.google.com/gmail/api/v1/reference/quota) for more information.
 
 ## Installation
-
 1. Visit Google Drive
 2. Click New > More > Google Apps Script
     * Copy backend/gmail.js to the main code.gs file
@@ -55,7 +56,7 @@ The main solutions I found at the time, in 2016, were Right Inbox and Boomerang.
 
 I stumbled upon Google Apps Scripts and realized their APIs could do just what I needed. It didn't take long until I bumped into the Gmail scheduler by [labnol.org](https://www.labnol.org/internet/schedule-gmail-send-later/24867/). I now knew it was possible but really didn't like the idea of having to open a spreadsheet to schedule the emails. I knew it was possible to make a simpler version of their script with a nice web interface so that's what I did. Big thanks to labnol.org for their original work. I did end up using their function for sending drafts since it was already well made.
 
-## Authentication
+## Authorization
 
 In order to send drafts that are part of threads, we utilize the GMail API. To use this, you must enable that API both in the Scripts project and in the Google Cloud Console.
 
