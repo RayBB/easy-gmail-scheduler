@@ -15,22 +15,23 @@ function sendScheduledEmails(){
     }
     function sendEmailBySubject(subject) {
         var drafts = GmailApp.getDraftMessages();
-    
+
         for (var i in drafts) {
             if (drafts[i].getSubject() == subject) {
-              try{
-                  var result = dispatchDraft(drafts[i].getId());
-                  removeEmailFromSchedule(subject)
-                  updateTriggers();
+                try {
+                    var result = dispatchDraft(drafts[i].getId());
+                    removeEmailFromSchedule(subject)
+                    updateTriggers();
 
-                  if (result === "Delivered"){
-                      return true;
-                  } else {
-                      sendErrorEmail(subject, "Error: " + result)
-                  }
-                }catch(err){
-                sendErrorEmail(subject, "Error: Unable to locate/send the draft:<br /> " + err);
-            } else if(i == drafts.length-1){ // If we reach the last draft and the message wasn't found
+                    if (result === "Delivered") {
+                        return true;
+                    } else {
+                        sendErrorEmail(subject, "Error: " + result)
+                    }
+                } catch (err) {
+                    sendErrorEmail(subject, "Error: Unable to locate/send the draft:<br /> " + err);
+                }
+            } else if (i == drafts.length - 1) { // If we reach the last draft and the message wasn't found
                 sendErrorEmail(subject, "Error: No email was found with the subject: " + subject);
                 removeEmailFromSchedule(subject);
             }
