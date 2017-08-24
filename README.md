@@ -42,7 +42,7 @@ Check it out:
 3. Click File > New > Html file
     * Name it index.html and copy frontend/index.html into it
 4. Authenticate Script
-    * Instructions [here](https://github.com/RayBB/easy-gmail-scheduler#authentication). Only the owner is required to do this.
+    * Instructions [here](https://github.com/RayBB/easy-gmail-scheduler#authorization). Only the owner is required to do this.
 5. Click Publish > Deploy as web app
     * Execute the app as: "User accessing the web app"
     * Who has acces to the app: "Anyone"
