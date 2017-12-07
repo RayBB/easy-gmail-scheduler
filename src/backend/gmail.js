@@ -107,7 +107,7 @@ function deleteProperties() {
 // Below are functions used by web interface
 function doGet() {
     // Serves html page for web interface
-    return HtmlService.createHtmlOutputFromFile('Index')
+    return HtmlService.createHtmlOutputFromFile('index')
         // This setting may expose to to cross site scripting but will allow your app to work anywhere
         //.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
         ///.setFaviconUrl(iconUrl) 
