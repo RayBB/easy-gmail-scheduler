@@ -10,7 +10,7 @@ Developed and designed by [Raybb](https://github.com/RayBB).
 ## Demo
 Check it out:
 * [live](https://raybb.github.io/easy-gmail-scheduler/src/frontend/) (dummy data, no authorization)
-* [live](https://script.google.com/macros/s/AKfycbxk4wQhd-mclrc1v0NeE1g4RL5ab9k6Gsa9MM2L58hcux3xT04/exec) (your data, requires authorization)
+* Unfortunately, Google has removed the ability for my demo to send you emails so you must follow setup instrucitons below to use it now.
 
 ## Features
 * Schedule unlimited emails
@@ -21,7 +21,6 @@ Check it out:
 * Lightweight (only 160KB)
 
 ### Future Features
-* Get drafts using Gmail API (faster)
 * Welcome email
 * Add favicon
 * Offline mode
