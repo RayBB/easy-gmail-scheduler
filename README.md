@@ -1,5 +1,7 @@
 # Easy Gmail Scheduler
 
+Update Jan 2023: Since Google released the ability to scheduled messages a few years ago I'm archiving this project. It should still work though.
+
 Responsive Gmail scheduler built with [Bootstrap 3](https://getbootstrap.com/) and running on [Google Apps Scripts](https://www.google.com/script/start/).
 
 
